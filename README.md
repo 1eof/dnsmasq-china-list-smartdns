@@ -2,4 +2,4 @@
 ## Info
 Auto generate dnsmasq-china-list for SmartDNS domain-rules Everyday.
 ## Opts
--speed-check-mode tcp:80 -nameserver domestic
+Set `speed-check-mode` as `tcp:80` and `nameserver` as `domestic`
