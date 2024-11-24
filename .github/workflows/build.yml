@@ -10,7 +10,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
       - name: Set variables
         run: |
           echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
@@ -31,10 +30,10 @@ jobs:
           make SERVER=domestic SMARTDNS_SPEEDTEST_MODE=tcp:80 smartdns-domain-rules
           cp *.domain.smartdns.conf $GITHUB_WORKSPACE
 
-    - name: Checkout
-      uses: actions/checkout@master
-      with:
-         token: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN  }}
 
       - name: Commit files
         run: |
