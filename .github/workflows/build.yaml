@@ -1,0 +1,49 @@
+name: Build SmartDNS Conf
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "33 3 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    - name: Clone dnsmasq-china-list repo
+      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+      with:
+        depth: 1
+        branch: 'master'
+        owner: 'felixonmars'
+        repository: 'dnsmasq-china-list'
+
+    - name: Build
+      run: cd dnsmasq-china-list && make SERVER=domestic SMARTDNS_SPEEDTEST_MODE=tcp:80 smartdns-domain-rules
+
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+         token: ${{ secrets.GITHUB_TOKEN  }}
+
+    - name: Copy files
+      run: cp -rf ../dnsmasq-china-list/*.domain.smartdns.conf ./
+      
+    - name: Commit files
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "Auto build"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 1
