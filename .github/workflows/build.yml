@@ -27,7 +27,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN  }}
 
       - name: Copy files
-        run: cp -rf $GITHUB_WORKSPACE/dnsmasq-china-list/*.domain.smartdns.conf ./
+        run: cp $GITHUB_WORKSPACE/../dnsmasq-china-list/*.domain.smartdns.conf .
         
       - name: Commit files
         run: |
