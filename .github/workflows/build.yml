@@ -3,13 +3,20 @@ name: Build SmartDNS Conf
 on:
   workflow_dispatch:
   schedule:
-    - cron: "33 3 * * *"
+    - cron: "0 22 * * *"
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
+
+      - name: Set variables
+        run: |
+          echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+          echo "RELEASE_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+        shell: bash
+
       - name: Clone dnsmasq-china-list repo
         uses: GuillaumeFalourd/clone-github-repo-action@v2.3
         with:
@@ -18,22 +25,22 @@ jobs:
           owner: 'felixonmars'
           repository: 'dnsmasq-china-list'
 
-      - name: Build
-        run: cd dnsmasq-china-list && make SERVER=domestic SMARTDNS_SPEEDTEST_MODE=tcp:80 smartdns-domain-rules
+      - name: Build SmartDNS Conf
+        run: |
+          cd dnsmasq-china-list
+          make SERVER=domestic SMARTDNS_SPEEDTEST_MODE=tcp:80 smartdns-domain-rules
+          cp *.domain.smartdns.conf $GITHUB_WORKSPACE
 
-      - name: Checkout
-        uses: actions/checkout@master
-        with:
-          token: ${{ secrets.GITHUB_TOKEN  }}
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+         token: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Copy files
-        run: cp $GITHUB_WORKSPACE/../dnsmasq-china-list/*.domain.smartdns.conf .
-        
       - name: Commit files
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git commit -a -m "Auto build"
+          git commit -a -m "${{ env.RELEASE_NAME }}"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -46,5 +53,5 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
-          retain_days: 1
-          keep_minimum_runs: 1
+          retain_days: 0
+          keep_minimum_runs: 0
