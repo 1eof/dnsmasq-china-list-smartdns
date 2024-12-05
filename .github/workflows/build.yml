@@ -21,8 +21,8 @@ jobs:
       - name: Build SmartDNS Conf
         run: |
           cd dnsmasq-china-list
-          make SERVER=domestic SMARTDNS_SPEEDTEST_MODE=tcp:80 smartdns-domain-rules
-          cp *.domain.smartdns.conf /tmp
+          make SERVER=domestic smartdns
+          cp *.smartdns.conf /tmp
 
       - name: Checkout
         uses: actions/checkout@master
@@ -31,7 +31,7 @@ jobs:
 
       - name: Copy files
         run: |
-          cp /tmp/*.domain.smartdns.conf .
+          cp /tmp/*.smartdns.conf .
 
       - name: Add & Commit
         uses: EndBug/add-and-commit@v9.1.4
